@@ -18,11 +18,9 @@ export default function PerfilScreen() {
         <Text style={styles.text}>{userSession?.nombre ?? 'Usuario'}</Text>
       )}
 
-      {!isGuest && (
-        <Pressable style={styles.button} onPress={logout}>
-          <Text style={styles.buttonText}>Cerrar Sesión</Text>
-        </Pressable>
-      )}
+      <Pressable style={styles.button} onPress={logout}>
+        <Text style={styles.buttonText}>{isGuest ? 'Ir al Login' : 'Cerrar Sesión'}</Text>
+      </Pressable>
     </View>
   );
 }
