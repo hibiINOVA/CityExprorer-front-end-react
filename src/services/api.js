@@ -9,7 +9,7 @@ import axios from 'axios';
 import { getToken } from './storage';
 
 // TODO: ajustar a la URL real del backend Laravel una vez desplegado / en LAN
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = 'http://10.0.2.2:80/api';
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -28,14 +28,16 @@ api.interceptors.request.use(async (config) => {
 // ---------- Endpoints de autenticación ----------
 
 export async function loginRequest(correo, password) {
-  const { data } = await api.post('/login', { correo, password });
-  return data; // se espera { token, user }
+  const { data } = await api.post('/user/login', { correo, password });
+  // El backend devuelve: { estatus, access_token, data: { ...usuario } }
+  return { token: data.access_token, user: data.data };
 }
 
 export async function registerRequest(payload) {
   // payload: { nombre, apellidoP, apellidoM, correo, password, id_rol: 1 }
-  const { data } = await api.post('/register', payload);
-  return data; // se espera { token, user }
+  const { data } = await api.post('/user/register', payload);
+  // El backend devuelve: { estatus, data: { token, usuario: { ... } } }
+  return { token: data.data.token, user: data.data.usuario };
 }
 
 export async function getPerfilRequest() {

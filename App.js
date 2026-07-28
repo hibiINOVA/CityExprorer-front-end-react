@@ -10,7 +10,7 @@ if (global?.ErrorUtils?.setGlobalHandler) {
   const origHandler = global.ErrorUtils.getGlobalHandler();
   global.ErrorUtils.setGlobalHandler((error, isFatal) => {
     console.error('[GlobalError]', error?.message, error?.stack);
-    origHandler(error, isFatal);
+    if (typeof origHandler === 'function') origHandler(error, isFatal);
   });
 }
 

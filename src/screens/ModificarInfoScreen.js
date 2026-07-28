@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import RequireAuth from '../components/RequireAuth';
 
 // TODO(equipo negocio): reemplazar con la pantalla real (Módulo 3/4 del documento).
 // Este stub solo existe para que la navegación compile y sea probable de punta a punta.
 export default function ModificarInfoScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Modificar Info (RequireAuth - pendiente: ImagePickerButton)</Text>
-    </View>
+    <RequireAuth>
+      <View style={styles.container}>
+        <Text style={styles.text}>Modificar Info (RequireAuth - pendiente: ImagePickerButton)</Text>
+      </View>
+    </RequireAuth>
   );
 }
 

@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'AUTH_SUCCESS', payload: { user: perfil, token } });
       } catch (error) {
         // Token inválido/expirado -> limpiar todo y mandar a AuthStack
-        await clearSession();
+        try { await clearSession(); } catch (_) { /* seguro falla silencioso */ }
         dispatch({ type: 'HYDRATE_FAIL' });
       }
     })();
@@ -118,6 +118,7 @@ export const AuthProvider = ({ children }) => {
   // ---------- login ----------
   const login = useCallback(async (correo, password) => {
     const { token, user } = await loginRequest(correo, password);
+    if (!token || !user) throw new Error('Login: respuesta inválida del servidor');
     await saveToken(token);
     await saveCachedProfile(user);
     await saveIsGuest(false);
@@ -135,6 +136,7 @@ export const AuthProvider = ({ children }) => {
       password,
       id_rol: 1,
     });
+    if (!token || !user) throw new Error('Register: respuesta inválida del servidor');
     await saveToken(token);
     await saveCachedProfile(user);
     await saveIsGuest(false);

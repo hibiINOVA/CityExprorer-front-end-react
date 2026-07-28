@@ -56,5 +56,5 @@ export async function getIsGuest() {
 
 export async function clearSession() {
   await deleteToken();
-  await AsyncStorage.multiRemove([KEYS.PROFILE, KEYS.IS_GUEST]);
+  await AsyncStorage.removeMany([KEYS.PROFILE, KEYS.IS_GUEST]);
 }
