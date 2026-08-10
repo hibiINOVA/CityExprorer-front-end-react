@@ -125,9 +125,7 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
   }, []);
 
-  // ---------- register ----------
-  // id_rol siempre fijo = 1 según el documento (usuario final)
-  const register = useCallback(async ({ nombre, apellidoP, apellidoM, correo, password }) => {
+  const register = useCallback(async ({ nombre, apellidoP, apellidoM, correo, password, foto_perfil }) => {
     const { token, user } = await registerRequest({
       nombre,
       apellidoP,
@@ -135,6 +133,7 @@ export const AuthProvider = ({ children }) => {
       correo,
       password,
       id_rol: 1,
+      foto_perfil,
     });
     if (!token || !user) throw new Error('Register: respuesta inválida del servidor');
     await saveToken(token);

@@ -6,10 +6,15 @@
  * comentarios) los agrega quien trabaje DataContext.
  */
 import axios from 'axios';
+import { Platform } from 'react-native';
 import { getToken } from './storage';
 
-// TODO: ajustar a la URL real del backend Laravel una vez desplegado / en LAN
-const BASE_URL = 'http://10.0.2.2:80/api';
+// Configuración de la URL del backend Laravel en puerto 8000
+const BASE_URL = Platform.select({
+  ios: 'http://localhost:8000/api',
+  android: 'http://10.0.2.2:8000/api',
+  default: 'http://localhost:8000/api',
+});
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -34,8 +39,34 @@ export async function loginRequest(correo, password) {
 }
 
 export async function registerRequest(payload) {
-  // payload: { nombre, apellidoP, apellidoM, correo, password, id_rol: 1 }
-  const { data } = await api.post('/user/register', payload);
+  // payload: { nombre, apellidoP, apellidoM, correo, password, id_rol, foto_perfil }
+  const formData = new FormData();
+  formData.append('nombre', payload.nombre);
+  formData.append('apellidoP', payload.apellidoP);
+  formData.append('apellidoM', payload.apellidoM || '');
+  formData.append('correo', payload.correo);
+  formData.append('password', payload.password);
+  formData.append('id_rol', String(payload.id_rol ?? 1));
+
+  if (payload.foto_perfil) {
+    const uri = payload.foto_perfil;
+    const uriParts = uri.split('.');
+    const fileType = uriParts[uriParts.length - 1];
+    
+    // En React Native, adjuntamos la imagen en este formato especial para FormData
+    formData.append('foto_perfil', {
+      uri,
+      name: `photo.${fileType}`,
+      type: `image/${fileType}`,
+    });
+  }
+
+  const { data } = await api.post('/user/register', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  
   // El backend devuelve: { estatus, data: { token, usuario: { ... } } }
   return { token: data.data.token, user: data.data.usuario };
 }

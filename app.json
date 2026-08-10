@@ -24,7 +24,13 @@
       "package": "com.cityexplorer.rn"
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permite que City Explorer acceda a tus fotos para elegir tu foto de perfil."
+        }
+      ]
     ]
   }
 }
