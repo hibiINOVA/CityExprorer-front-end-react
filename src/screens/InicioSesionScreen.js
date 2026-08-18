@@ -78,7 +78,10 @@ export default function InicioSesionScreen({ navigation }) {
             </View>
           </View>
 
-          <Pressable style={styles.forgotPassword}>
+          <Pressable
+            style={styles.forgotPassword}
+            onPress={() => navigation.navigate('Restablecer')}
+          >
             <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
           </Pressable>
         </View>

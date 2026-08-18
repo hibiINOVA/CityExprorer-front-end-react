@@ -56,6 +56,8 @@ function authReducer(state, action) {
       return { ...state, isLoading: false, isGuest: true };
     case 'HYDRATE_SHOW_CACHED_PROFILE':
       return { ...state, userSession: action.payload };
+    case 'UPDATE_USER':
+      return { ...state, userSession: action.payload };
     case 'AUTH_SUCCESS':
       return {
         ...state,
@@ -105,6 +107,12 @@ export const AuthProvider = ({ children }) => {
         }
 
         const perfil = await getPerfilRequest();
+        if (perfil.id_rol && perfil.id_rol !== 1) {
+          // Solo el rol "usuario final" (1) está disponible en la app móvil.
+          try { await clearSession(); } catch (_) { /* seguro falla silencioso */ }
+          dispatch({ type: 'HYDRATE_FAIL' });
+          return;
+        }
         await saveCachedProfile(perfil);
         dispatch({ type: 'AUTH_SUCCESS', payload: { user: perfil, token } });
       } catch (error) {
@@ -119,6 +127,10 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (correo, password) => {
     const { token, user } = await loginRequest(correo, password);
     if (!token || !user) throw new Error('Login: respuesta inválida del servidor');
+    if (user.id_rol && user.id_rol !== 1) {
+      // Solo el rol "usuario final" (1) tiene módulo en la app móvil.
+      throw new Error('El módulo de anunciantes/administradores no está disponible en la app móvil. Solo está disponible el acceso para usuarios finales.');
+    }
     await saveToken(token);
     await saveCachedProfile(user);
     await saveIsGuest(false);
@@ -160,8 +172,17 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   }, []);
 
+  // ---------- updateUserSession ----------
+  // Refresca el perfil en memoria y en la caché local tras editar la información.
+  const updateUserSession = useCallback(async (perfil) => {
+    await saveCachedProfile(perfil);
+    dispatch({ type: 'UPDATE_USER', payload: perfil });
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ ...state, login, register, guestLogin, logout }}>
+    <AuthContext.Provider
+      value={{ ...state, login, register, guestLogin, logout, updateUserSession }}
+    >
       {children}
     </AuthContext.Provider>
   );

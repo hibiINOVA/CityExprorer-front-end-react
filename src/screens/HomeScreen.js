@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,32 +7,57 @@ import {
   ScrollView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthContext } from '../store/AuthContext';
+import { getCategorias } from '../services/api';
 import { colors, typography, spacing, radius } from '../theme/theme';
+
+const ICONOS_CATEGORIA = [
+  { clave: 'parque', icono: 'leaf-outline' },
+  { clave: 'iglesia', icono: 'business-outline' },
+  { clave: 'plaza', icono: 'compass-outline' },
+  { clave: 'patrimonio', icono: 'ribbon-outline' },
+  { clave: 'arte', icono: 'color-palette-outline' },
+  { clave: 'bebida', icono: 'wine-outline' },
+  { clave: 'comida', icono: 'restaurant-outline' },
+  { clave: 'restaurant', icono: 'restaurant-outline' },
+  { clave: 'antros', icono: 'moon-outline' },
+  { clave: 'noche', icono: 'moon-outline' },
+  { clave: 'mercado', icono: 'cart-outline' },
+  { clave: 'tienda', icono: 'storefront-outline' },
+  { clave: 'relax', icono: 'spa-outline' },
+];
+
+function iconoCategoria(nombre) {
+  const texto = (nombre || '').toLowerCase();
+  const match = ICONOS_CATEGORIA.find((item) => texto.includes(item.clave));
+  return match ? match.icono : 'location-outline';
+}
 
 export default function HomeScreen({ navigation }) {
   const { isGuest, logout } = useAuthContext();
   const [showBanner, setShowBanner] = useState(true);
+  const [categorias, setCategorias] = useState([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
 
-  const categories = [
-    { id: 'parques', name: 'PARQUES', icon: 'leaf-outline' },
-    { id: 'iglesias', name: 'IGLESIAS', icon: 'business-outline' },
-    { id: 'plazas', name: 'PLAZAS', icon: 'compass-outline' },
-    { id: 'patrimonio', name: 'PATRIMONIO', icon: 'ribbon-outline' },
-    { id: 'arte', name: 'ARTE', icon: 'color-palette-outline' },
-    { id: 'bebidas', name: 'BEBIDAS', icon: 'wine-outline' },
-    { id: 'ver_todo', name: 'VER TODO', icon: 'grid-outline' },
-  ];
+  useEffect(() => {
+    (async () => {
+      try {
+        const cats = await getCategorias();
+        setCategorias(cats);
+      } catch (_) {
+        setCategorias([]);
+      } finally {
+        setLoadingCategorias(false);
+      }
+    })();
+  }, []);
 
   const handleCategoryPress = (categoryId) => {
-    if (categoryId === 'ver_todo') {
-      navigation.navigate('Destinos');
-    } else {
-      navigation.navigate('Destinos', { categoryId });
-    }
+    navigation.navigate('DestinosCategoria', { categoryId });
   };
 
   const handleFabPress = () => {
@@ -89,22 +114,34 @@ export default function HomeScreen({ navigation }) {
         )}
 
         {/* Categories Grid */}
-        <View style={styles.grid}>
-          {categories.map((cat) => (
+        {loadingCategorias ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        ) : (
+          <View style={styles.grid}>
+            {categorias.map((cat) => (
+              <Pressable
+                key={cat.id_categoria}
+                style={({ pressed }) => [
+                  styles.card,
+                  pressed && styles.cardPressed,
+                ]}
+                onPress={() => handleCategoryPress(cat.id_categoria)}
+              >
+                <Ionicons name={iconoCategoria(cat.nombre)} size={28} color={colors.primary} />
+                <Text style={styles.cardText}>{cat.nombre}</Text>
+              </Pressable>
+            ))}
             <Pressable
-              key={cat.id}
-              style={({ pressed }) => [
-                styles.card,
-                pressed && styles.cardPressed,
-                cat.id === 'ver_todo' && styles.verTodoCard,
-              ]}
-              onPress={() => handleCategoryPress(cat.id)}
+              style={({ pressed }) => [styles.card, styles.verTodoCard, pressed && styles.cardPressed]}
+              onPress={() => handleCategoryPress(null)}
             >
-              <Ionicons name={cat.icon} size={28} color={colors.primary} />
-              <Text style={styles.cardText}>{cat.name}</Text>
+              <Ionicons name="grid-outline" size={28} color={colors.primary} />
+              <Text style={styles.cardText}>VER TODO</Text>
             </Pressable>
-          ))}
-        </View>
+          </View>
+        )}
       </ScrollView>
 
       {/* FAB */}
@@ -196,6 +233,10 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: spacing.xs,
   },
+  loadingContainer: {
+    paddingVertical: spacing.xl,
+    alignItems: 'center',
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -233,6 +274,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     letterSpacing: 1,
     fontSize: 11,
+    textAlign: 'center',
   },
   fab: {
     position: 'absolute',
