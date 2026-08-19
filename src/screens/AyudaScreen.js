@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing, radius } from '../theme/theme';
 
 const secciones = [
@@ -70,7 +71,11 @@ export default function AyudaScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
+        <Pressable style={styles.headerButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color={colors.primary} />
+        </Pressable>
         <Text style={styles.headerText}>City Explorer</Text>
+        <View style={styles.headerButton} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -144,13 +149,22 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     height: 56,
+    paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     backgroundColor: colors.surface,
   },
+  headerButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerText: {
+    flex: 1,
+    textAlign: 'center',
     fontSize: 18,
     fontFamily: typography.h1.fontFamily,
     fontWeight: 'bold',

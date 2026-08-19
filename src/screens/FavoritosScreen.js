@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuthContext } from '../store/AuthContext';
 import { useDataContext } from '../store/DataContext';
 import useLugares from '../hooks/useLugares';
@@ -20,14 +21,19 @@ export default function FavoritosScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [cargandoId, setCargandoId] = useState(null);
 
-  useEffect(() => {
-    if (isGuest) return;
-    (async () => {
-      setLoading(true);
-      await fetchFavoritos();
-      setLoading(false);
-    })();
-  }, [isGuest, fetchFavoritos]);
+  // 🔄 Auto-refresh cuando el tab de Favoritos recibe foco
+  useFocusEffect(
+    useCallback(() => {
+      if (isGuest) return;
+      let cancelled = false;
+      (async () => {
+        setLoading(true);
+        await fetchFavoritos();
+        if (!cancelled) setLoading(false);
+      })();
+      return () => { cancelled = true; };
+    }, [isGuest, fetchFavoritos])
+  );
 
   useEffect(() => {
     if (isGuest || favoritos.length === 0) return;

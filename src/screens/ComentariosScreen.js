@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuthContext } from '../store/AuthContext';
 import { getComentarios, storageUrl } from '../services/api';
 import StarRating from '../components/StarRating';
@@ -17,20 +18,24 @@ export default function ComentariosScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (isGuest || !idDestino) return;
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await getComentarios(idDestino);
-        setComentarios(res.data || []);
-      } catch (e) {
-        setError(e.message || 'No se pudieron cargar los comentarios');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [isGuest, idDestino]);
+  useFocusEffect(
+    useCallback(() => {
+      if (isGuest || !idDestino) return;
+      let cancelled = false;
+      (async () => {
+        setLoading(true);
+        try {
+          const res = await getComentarios(idDestino);
+          if (!cancelled) setComentarios(res.data || []);
+        } catch (e) {
+          if (!cancelled) setError(e.message || 'No se pudieron cargar los comentarios');
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+      })();
+      return () => { cancelled = true; };
+    }, [isGuest, idDestino])
+  );
 
   if (isGuest) {
     return (
