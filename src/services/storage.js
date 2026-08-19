@@ -6,9 +6,13 @@
  *  - access_token  -> expo-secure-store  (dato sensible, cifrado en el llavero del SO)
  *  - perfil cacheado (nombre, correo, id_rol) -> AsyncStorage (no sensible)
  *  - isGuest -> AsyncStorage (se persiste entre sesiones)
+ *
+ * En web, expo-secure-store no está disponible, por lo que el token se
+ * respalda en AsyncStorage (misma capa que el resto de datos no sensibles).
  */
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 const KEYS = {
   TOKEN: 'access_token',
@@ -16,18 +20,33 @@ const KEYS = {
   IS_GUEST: 'is_guest',
 };
 
-// ---------- Token (SecureStore) ----------
+// ---------- Token (SecureStore nativo / AsyncStorage en web) ----------
+
+async function secureGetItem(key) {
+  if (Platform.OS === 'web') return AsyncStorage.getItem(key);
+  return SecureStore.getItemAsync(key);
+}
+
+async function secureSetItem(key, value) {
+  if (Platform.OS === 'web') return AsyncStorage.setItem(key, value);
+  return SecureStore.setItemAsync(key, value);
+}
+
+async function secureDeleteItem(key) {
+  if (Platform.OS === 'web') return AsyncStorage.removeItem(key);
+  return SecureStore.deleteItemAsync(key);
+}
 
 export async function saveToken(token) {
-  await SecureStore.setItemAsync(KEYS.TOKEN, token);
+  await secureSetItem(KEYS.TOKEN, token);
 }
 
 export async function getToken() {
-  return SecureStore.getItemAsync(KEYS.TOKEN);
+  return secureGetItem(KEYS.TOKEN);
 }
 
 export async function deleteToken() {
-  await SecureStore.deleteItemAsync(KEYS.TOKEN);
+  await secureDeleteItem(KEYS.TOKEN);
 }
 
 // ---------- Perfil cacheado (AsyncStorage) ----------

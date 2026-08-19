@@ -160,7 +160,7 @@ export default function DestinosScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   header: {
     flexDirection: 'row',
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
     backgroundColor: colors.surface,
   },
   headerButton: {
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: spacing.md,
     fontSize: 15,
-    color: colors.text,
+    color: colors.text.primary,
   },
   starFilter: {
     flexDirection: 'row',
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   starChipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.text,
+    color: colors.text.primary,
   },
   starChipTextActive: {
     color: '#FFFFFF',

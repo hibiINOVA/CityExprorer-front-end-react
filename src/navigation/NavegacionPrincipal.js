@@ -22,7 +22,7 @@ const NavegacionPrincipal = () => (
       tabBarInactiveTintColor: colors.textSecondary,
       tabBarStyle: {
         backgroundColor: colors.surface,
-        borderTopColor: colors.border,
+        borderTopColor: colors.border.light,
         borderTopWidth: 1,
         height: Platform.OS === 'ios' ? 76 : 60,
         paddingBottom: Platform.OS === 'ios' ? 16 : 8,

@@ -118,7 +118,7 @@ export default function PerfilScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   header: {
     flexDirection: 'row',
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 56,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
     backgroundColor: colors.surface,
   },
   headerText: {
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.lg,
     padding: spacing.lg,
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   menu: {
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.lg,
     overflow: 'hidden',
   },
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
   },
   menuItemPressed: {
     backgroundColor: '#FAF7F4',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...typography.body,
     fontSize: 15,
-    color: colors.text,
+    color: colors.text.primary,
   },
   logoutButton: {
     flexDirection: 'row',

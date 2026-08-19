@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing, radius } from '../theme/theme';
+import AppText from './common/AppText';
+import AppButton from './common/AppButton';
+import { colors, spacing } from '../theme/theme';
 
 /**
  * EmptyState - estado vacío genérico con icono, mensaje y acción opcional.
@@ -16,14 +18,12 @@ export default function EmptyState({
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle}>
-        <Ionicons name={icon} size={40} color={colors.primary} />
+        <Ionicons name={icon} size={40} color={colors.brand.primary} />
       </View>
-      {title ? <Text style={styles.title}>{title}</Text> : null}
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      {title ? <AppText variant="h2" style={styles.title}>{title}</AppText> : null}
+      {message ? <AppText variant="body" style={styles.message}>{message}</AppText> : null}
       {actionLabel && onAction ? (
-        <Pressable style={styles.button} onPress={onAction}>
-          <Text style={styles.buttonText}>{actionLabel}</Text>
-        </Pressable>
+        <AppButton title={actionLabel} onPress={onAction} style={styles.button} />
       ) : null}
     </View>
   );
@@ -41,31 +41,20 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: 42,
-    backgroundColor: 'rgba(229, 223, 217, 0.4)',
+    backgroundColor: colors.border.light,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.xs,
   },
   title: {
-    ...typography.h2,
     textAlign: 'center',
   },
   message: {
-    ...typography.body,
-    color: colors.textSecondary,
+    color: colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 22,
   },
   button: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: radius.md,
     marginTop: spacing.sm,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 15,
+    maxWidth: 260,
   },
 });

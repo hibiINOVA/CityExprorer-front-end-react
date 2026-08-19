@@ -14,14 +14,17 @@ import { Ionicons } from '@expo/vector-icons';
 import RequireAuth from '../components/RequireAuth';
 import StarRating from '../components/StarRating';
 import { useAuthContext } from '../store/AuthContext';
-import { getLugar, getComentario, createComentario, updateComentario } from '../services/api';
+import { useDataContext } from '../store/DataContext';
+import { getLugar, getComentario } from '../services/api';
+import AppButton from '../components/common/AppButton';
 import { colors, typography, spacing, radius } from '../theme/theme';
 
 const MIN_CARACTERES = 30;
-const MAX_CARACTERES = 500;
+const MAX_CARACTERES = 1000;
 
 function ReseniaForm({ navigation, route }) {
   const { userSession } = useAuthContext();
+  const { handleAgregarComentario } = useDataContext();
   const idDestino = route.params?.id_destino;
   const idResenia = route.params?.id_resenia ? Number(route.params.id_resenia) : 0;
 
@@ -74,18 +77,12 @@ function ReseniaForm({ navigation, route }) {
 
     setEnviando(true);
     try {
-      if (esEdicion) {
-        await updateComentario(idResenia, {
-          contenido: contenido.trim(),
-          valoracion,
-        });
-      } else {
-        await createComentario({
-          contenido: contenido.trim(),
-          valoracion,
-          id_lugar: Number(idDestino),
-        });
-      }
+      await handleAgregarComentario({
+        contenido: contenido.trim(),
+        valoracion,
+        id_lugar: Number(idDestino),
+        id_comentario: esEdicion ? idResenia : null,
+      });
       Alert.alert(
         '¡Éxito!',
         esEdicion ? 'Tu reseña fue actualizada exitosamente.' : 'Gracias por compartir tu opinión.',
@@ -155,11 +152,11 @@ function ReseniaForm({ navigation, route }) {
               </Text>
             </View>
 
-            <Pressable style={styles.button} onPress={enviar} disabled={enviando}>
-              <Text style={styles.buttonText}>
-                {enviando ? 'ENVIANDO...' : esEdicion ? 'GUARDAR CAMBIOS' : 'ENVIAR RESEÑA'}
-              </Text>
-            </Pressable>
+            <AppButton
+              title={enviando ? 'ENVIANDO...' : esEdicion ? 'GUARDAR CAMBIOS' : 'ENVIAR RESEÑA'}
+              onPress={enviar}
+              loading={enviando}
+            />
           </>
         )}
       </ScrollView>
@@ -178,7 +175,7 @@ export default function ReseniaScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   header: {
     flexDirection: 'row',
@@ -187,7 +184,7 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
     backgroundColor: colors.surface,
   },
   headerButton: {
@@ -218,7 +215,7 @@ const styles = StyleSheet.create({
   lugarCard: {
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: spacing.xs,
@@ -238,7 +235,7 @@ const styles = StyleSheet.create({
   label: {
     ...typography.caption,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.text.primary,
     alignSelf: 'flex-start',
   },
   ratingHint: {
@@ -251,11 +248,11 @@ const styles = StyleSheet.create({
   textArea: {
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.md,
     padding: spacing.md,
     fontSize: 15,
-    color: colors.text,
+    color: colors.text.primary,
     minHeight: 140,
   },
   charCount: {

@@ -4,6 +4,8 @@ import IniciarRegistroScreen from '../screens/IniciarRegistroScreen';
 import InicioSesionScreen from '../screens/InicioSesionScreen';
 import RegistroScreen from '../screens/RegistroScreen';
 import RestablecerScreen from '../screens/RestablecerScreen';
+import TerminosScreen from '../screens/TerminosScreen';
+import PrivacidadScreen from '../screens/PrivacidadScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +15,8 @@ const AuthStack = () => (
     <Stack.Screen name="InicioSesion" component={InicioSesionScreen} />
     <Stack.Screen name="Registro" component={RegistroScreen} />
     <Stack.Screen name="Restablecer" component={RestablecerScreen} />
+    <Stack.Screen name="Terminos" component={TerminosScreen} />
+    <Stack.Screen name="Privacidad" component={PrivacidadScreen} />
   </Stack.Navigator>
 );
 

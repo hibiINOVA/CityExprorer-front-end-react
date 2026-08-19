@@ -1,9 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { getLugares, getCategorias, getEstadisticasLugar } from '../services/api';
 
 /**
  * useLugares - carga lugares activos, categorías y el promedio de valoración
  * de cada lugar (endpoint de estadísticas, evita N+1 de comentarios).
+ *
+ * Recarga en silencio cada vez que la pantalla recupera el foco (p. ej.
+ * después de escribir una reseña) para mantener promedios y contadores
+ * actualizados sin parpadear el spinner en cada pestaña.
  */
 export default function useLugares() {
   const [lugares, setLugares] = useState([]);
@@ -11,9 +16,10 @@ export default function useLugares() {
   const [estadisticas, setEstadisticas] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const cargado = useRef(false);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    if (!cargado.current) setLoading(true);
     setError(null);
     try {
       const [lugaresData, categoriasData] = await Promise.all([getLugares(), getCategorias()]);
@@ -35,12 +41,15 @@ export default function useLugares() {
       setError(e.message || 'Error al cargar los lugares');
     } finally {
       setLoading(false);
+      cargado.current = true;
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
 
   const getCategoriaNombre = useCallback(
     (idCategoria) => {

@@ -31,6 +31,95 @@ api.interceptors.request.use(async (config) => {
 });
 
 /**
+ * Corrige doble codificación UTF-8 ("mojibake").
+ * El backend puede devolver p. ej. "emblemÃ¡tico" en lugar de "emblemático"
+ * porque los bytes UTF-8 (0xC3 0xA1) se interpretaron como Latin-1.
+ * Solo actúa cuando la cadena contiene caracteres U+00C2/U+00C3
+ * (que nunca aparecen en español correcto) y valida la secuencia UTF-8.
+ */
+function fixUtf8(str) {
+  if (typeof str !== 'string') return str;
+  if (!/[\u00C2\u00C3]/.test(str)) return str;
+
+  try {
+    const bytes = [];
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      if (code <= 0xff) {
+        bytes.push(code);
+      } else {
+        // Carácter fuera de Latin-1: no es mojibake puro, devolver original.
+        return str;
+      }
+    }
+
+    const out = [];
+    for (let i = 0; i < bytes.length; i++) {
+      const b = bytes[i];
+      if (b < 0x80) {
+        out.push(String.fromCharCode(b));
+      } else if ((b & 0xe0) === 0xc0 && i + 1 < bytes.length) {
+        const b2 = bytes[i + 1];
+        if ((b2 & 0xc0) !== 0x80) return str;
+        i += 1;
+        out.push(String.fromCharCode(((b & 0x1f) << 6) | (b2 & 0x3f)));
+      } else if ((b & 0xf0) === 0xe0 && i + 2 < bytes.length) {
+        const b2 = bytes[i + 1];
+        const b3 = bytes[i + 2];
+        if ((b2 & 0xc0) !== 0x80 || (b3 & 0xc0) !== 0x80) return str;
+        i += 2;
+        out.push(String.fromCharCode(((b & 0x0f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f)));
+      } else {
+        // Secuencia UTF-8 inválida: no corregir.
+        return str;
+      }
+    }
+    return out.join('');
+  } catch (_) {
+    return str;
+  }
+}
+
+/** Recorre la respuesta y corrige todas las cadenas de texto. */
+function deepFixUtf8(value) {
+  if (Array.isArray(value)) {
+    return value.map(deepFixUtf8);
+  }
+  if (value && typeof value === 'object') {
+    const result = {};
+    for (const key of Object.keys(value)) {
+      result[key] = deepFixUtf8(value[key]);
+    }
+    return result;
+  }
+  if (typeof value === 'string') {
+    return fixImageUrl(fixUtf8(value));
+  }
+  return value;
+}
+
+// El backend guardó la URL completa (https://images.unsplash.com/...) y luego
+// la devolvió prefijada con /storage/, generando URLs rotas. Aquí se limpian.
+const STORAGE_PREFIX = `${BASE_URL.replace(/\/api$/, '')}/storage/`;
+
+function fixImageUrl(url) {
+  if (typeof url !== 'string') return url;
+  if (url.startsWith(STORAGE_PREFIX)) {
+    const rest = url.slice(STORAGE_PREFIX.length);
+    if (/^https?:\/\//.test(rest)) return rest;
+  }
+  return url;
+}
+
+// Sanitiza el texto y las URLs de imágenes de las respuestas.
+api.interceptors.response.use((response) => {
+  if (response && response.data) {
+    response.data = deepFixUtf8(response.data);
+  }
+  return response;
+});
+
+/**
  * Construye la URL completa de un archivo servido desde /storage.
  * El backend devuelve rutas relativas (p. ej. "fotos_perfil/xxx.jpg")
  * para fotos de perfil; los endpoints de imágenes de lugares ya

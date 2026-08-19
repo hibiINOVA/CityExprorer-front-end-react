@@ -155,7 +155,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   header: {
     flexDirection: 'row',
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
     backgroundColor: colors.surface,
   },
   headerButton: {
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
   },
   infoIcon: {
     marginRight: spacing.sm,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   guestBannerText: {
     ...typography.body,
     fontSize: 13,
-    color: colors.text,
+    color: colors.text.primary,
     flex: 1,
     lineHeight: 18,
   },
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.md,
     width: '47%', // Two columns layout
     height: 100,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   cardText: {
     ...typography.caption,
     fontWeight: '700',
-    color: colors.text,
+    color: colors.text.primary,
     letterSpacing: 1,
     fontSize: 11,
     textAlign: 'center',

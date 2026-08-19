@@ -3,7 +3,8 @@
  * @description Contexto de datos de negocio (lugares, favoritos, comentarios)
  * para el flujo de usuario final / invitado.
  */
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
+import { AppState } from 'react-native';
 import {
   getLugares,
   getFavoritos,
@@ -12,6 +13,10 @@ import {
   createComentario,
   updateComentario,
 } from '../services/api';
+
+// Invalida la caché de datos de negocio tras 5 minutos de inactividad
+// (requisito de gobernanza: Plan de Migración sección 5.2).
+const INACTIVIDAD_MAXIMA_MS = 5 * 60 * 1000;
 
 const DataContext = createContext(null);
 
@@ -71,6 +76,8 @@ function dataReducer(state, action) {
         },
       };
     }
+    case 'RESET_DATA':
+      return { ...state, lugares: [], favoritos: [], comentarios: {} };
     default:
       return state;
   }
@@ -78,6 +85,22 @@ function dataReducer(state, action) {
 
 export const DataProvider = ({ children }) => {
   const [state, dispatch] = useReducer(dataReducer, initialState);
+
+  // Invalida la caché si la app regresa a primer plano tras 5+ min de inactividad.
+  const ultimoActivoRef = useRef(Date.now());
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        if (Date.now() - ultimoActivoRef.current > INACTIVIDAD_MAXIMA_MS) {
+          dispatch({ type: 'RESET_DATA' });
+        }
+        ultimoActivoRef.current = Date.now();
+      } else {
+        ultimoActivoRef.current = Date.now();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   const fetchLugares = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });

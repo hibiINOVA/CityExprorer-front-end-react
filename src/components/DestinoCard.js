@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Image, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from './StarRating';
+import AppText from './common/AppText';
 import { colors, typography, spacing, radius } from '../theme/theme';
 
 /**
@@ -27,28 +28,28 @@ export default function DestinoCard({
         <Image source={{ uri: imagenUrl }} style={styles.image} resizeMode="cover" />
       ) : (
         <View style={styles.imagePlaceholder}>
-          <Ionicons name="image-outline" size={28} color={colors.textSecondary} />
+          <Ionicons name="image-outline" size={28} color={colors.text.secondary} />
         </View>
       )}
 
       <View style={styles.info}>
-        <Text style={styles.name} numberOfLines={1}>
+        <AppText variant="h3" style={styles.name} numberOfLines={1}>
           {lugar?.nombre || 'Sin nombre'}
-        </Text>
+        </AppText>
         {nombreCategoria ? (
-          <Text style={styles.category} numberOfLines={1}>
+          <AppText style={styles.category} numberOfLines={1}>
             {nombreCategoria}
-          </Text>
+          </AppText>
         ) : null}
         {lugar?.descripcion ? (
-          <Text style={styles.description} numberOfLines={2}>
+          <AppText variant="caption" style={styles.description} numberOfLines={2}>
             {lugar.descripcion}
-          </Text>
+          </AppText>
         ) : null}
 
         <View style={styles.footer}>
           <StarRating value={promedio} size={14} />
-          <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
+          <Ionicons name="chevron-forward" size={18} color={colors.text.secondary} />
         </View>
       </View>
 
@@ -60,33 +61,33 @@ export default function DestinoCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background.base,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.lg,
     padding: spacing.sm,
     gap: spacing.md,
-    shadowColor: '#000',
+    shadowColor: colors.background.dark,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   cardPressed: {
-    backgroundColor: '#FAF7F4',
+    backgroundColor: colors.background.screen,
     transform: [{ scale: 0.99 }],
   },
   image: {
     width: 88,
     height: 88,
     borderRadius: radius.md,
-    backgroundColor: '#EEE8E3',
+    backgroundColor: colors.border.light,
   },
   imagePlaceholder: {
     width: 88,
     height: 88,
     borderRadius: radius.md,
-    backgroundColor: '#EEE8E3',
+    backgroundColor: colors.border.light,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -97,20 +98,17 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   name: {
-    ...typography.h3,
     fontSize: 16,
-    color: colors.text,
   },
   category: {
     ...typography.caption,
     fontSize: 12,
-    color: colors.primary,
+    color: colors.brand.primary,
     fontWeight: '600',
   },
   description: {
-    ...typography.caption,
     fontSize: 13,
-    color: colors.textSecondary,
+    color: colors.text.secondary,
   },
   footer: {
     flexDirection: 'row',

@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Pressable, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuthContext } from '../store/AuthContext';
-import { colors, typography, spacing, radius } from '../theme/theme';
+import ScreenContainer from '../components/common/ScreenContainer';
+import AppText from '../components/common/AppText';
+import AppButton from '../components/common/AppButton';
+import InputField from '../components/common/InputField';
+import PasswordField from '../components/common/PasswordField';
+import { colors, typography, spacing } from '../theme/theme';
 
 export default function InicioSesionScreen({ navigation }) {
   const { login } = useAuthContext();
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async () => {
     if (!correo || !password) {
@@ -29,87 +33,68 @@ export default function InicioSesionScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.backButtonText}>←</Text>
-          </Pressable>
-          <Text style={styles.headerText}>City Explorer</Text>
-          <View style={styles.headerPlaceholder} />
-        </View>
-
-        {/* Title */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>¡Hola de nuevo!</Text>
-          <Text style={styles.subtitle}>Nos alegra verte de regreso en San Miguel.</Text>
-        </View>
-
-        {/* Form */}
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Correo electrónico</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="ejemplo@correo.com"
-              placeholderTextColor={colors.textSecondary}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={correo}
-              onChangeText={setCorreo}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Contraseña</Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="••••••••"
-                placeholderTextColor={colors.textSecondary}
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
-              />
-              <Pressable style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
-                <Text style={styles.eyeButtonText}>{showPassword ? 'Ocultar' : '👁'}</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          <Pressable
-            style={styles.forgotPassword}
-            onPress={() => navigation.navigate('Restablecer')}
-          >
-            <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-          </Pressable>
-        </View>
-
-        {/* Actions */}
-        <View style={styles.actions}>
-          <Pressable style={styles.button} onPress={handleSubmit} disabled={loading}>
-            <Text style={styles.buttonText}>{loading ? 'ENTRANDO...' : 'INICIAR SESIÓN'}</Text>
-          </Pressable>
-
-          <Pressable style={styles.registerLink} onPress={() => navigation.navigate('Registro')}>
-            <Text style={styles.registerLinkText}>
-              ¿No tienes cuenta? <Text style={styles.registerBoldText}>Regístrate</Text>
-            </Text>
-          </Pressable>
-        </View>
+    <ScreenContainer style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color={colors.brand.primary} />
+        </Pressable>
+        <AppText style={styles.headerText}>City Explorer</AppText>
+        <View style={styles.headerPlaceholder} />
       </View>
-    </SafeAreaView>
+
+      {/* Title */}
+      <View style={styles.titleContainer}>
+        <AppText variant="h1" style={styles.title}>¡Hola de nuevo!</AppText>
+        <AppText variant="body" style={styles.subtitle}>
+          Nos alegra verte de regreso en San Miguel.
+        </AppText>
+      </View>
+
+      {/* Form */}
+      <View style={styles.form}>
+        <InputField
+          label="Correo electrónico"
+          placeholder="ejemplo@correo.com"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={correo}
+          onChangeText={setCorreo}
+        />
+
+        <PasswordField
+          label="Contraseña"
+          placeholder="••••••••"
+          value={password}
+          onChangeText={setPassword}
+        />
+
+        <Pressable
+          style={styles.forgotPassword}
+          onPress={() => navigation.navigate('Restablecer')}
+        >
+          <AppText variant="caption" style={styles.forgotPasswordText}>
+            ¿Olvidaste tu contraseña?
+          </AppText>
+        </Pressable>
+      </View>
+
+      {/* Actions */}
+      <View style={styles.actions}>
+        <AppButton title={loading ? 'ENTRANDO...' : 'INICIAR SESIÓN'} onPress={handleSubmit} loading={loading} />
+
+        <Pressable style={styles.registerLink} onPress={() => navigation.navigate('Registro')}>
+          <AppText style={styles.registerLinkText}>
+            ¿No tienes cuenta? <AppText style={styles.registerBoldText}>Regístrate</AppText>
+          </AppText>
+        </Pressable>
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   container: {
-    flex: 1,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
   },
@@ -124,18 +109,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: colors.primary,
-    fontWeight: 'bold',
   },
   headerText: {
     fontSize: 18,
     fontFamily: typography.h1.fontFamily,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.brand.primary,
     textAlign: 'center',
   },
   headerPlaceholder: {
@@ -146,66 +125,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   title: {
-    ...typography.h1,
     fontSize: 32,
-    color: colors.text,
   },
   subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
+    color: colors.text.secondary,
     marginTop: spacing.xs,
   },
   form: {
     gap: spacing.lg,
-  },
-  inputGroup: {
-    gap: spacing.xs,
-  },
-  label: {
-    ...typography.caption,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    fontSize: 16,
-    color: colors.text,
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-  },
-  passwordInput: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    fontSize: 16,
-    color: colors.text,
-  },
-  eyeButton: {
-    paddingHorizontal: spacing.md,
-    justifyContent: 'center',
-  },
-  eyeButtonText: {
-    fontSize: 14,
-    color: colors.textSecondary,
   },
   forgotPassword: {
     alignSelf: 'flex-end',
     paddingVertical: spacing.xs,
   },
   forgotPasswordText: {
-    ...typography.caption,
-    color: colors.primary,
+    color: colors.brand.primary,
     fontWeight: '600',
   },
   actions: {
@@ -213,35 +147,16 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingTop: spacing.lg,
   },
-  button: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md + 2,
-    borderRadius: radius.md,
-    width: '100%',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 16,
-    letterSpacing: 0.5,
-  },
   registerLink: {
     alignItems: 'center',
     paddingVertical: spacing.sm,
   },
   registerLinkText: {
-    ...typography.body,
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.text.secondary,
   },
   registerBoldText: {
-    color: colors.primary,
+    color: colors.brand.primary,
     fontWeight: 'bold',
   },
 });

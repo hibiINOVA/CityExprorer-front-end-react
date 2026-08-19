@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuthContext } from '../store/AuthContext';
+import { useDataContext } from '../store/DataContext';
 import {
   getLugar,
   getDireccion,
@@ -20,7 +21,6 @@ import {
   getCategorias,
   getComentarios,
   checkFavorito,
-  toggleFavorito,
   registrarVisita,
 } from '../services/api';
 import ImageGallery from '../components/ImageGallery';
@@ -40,6 +40,7 @@ function formatHora(hora) {
 
 export default function DestinoDetalleScreen({ navigation, route }) {
   const { userSession, isGuest, logout } = useAuthContext();
+  const { handleToggleFavorito } = useDataContext();
   const idDestino = route.params?.id_destino;
   const idUsuario = !isGuest ? userSession?.id_usuario : null;
 
@@ -204,7 +205,7 @@ export default function DestinoDetalleScreen({ navigation, route }) {
     }
     setToggling(true);
     try {
-      const res = await toggleFavorito(Number(idDestino));
+      const res = await handleToggleFavorito(Number(idDestino));
       setEsFavorito(res?.action === 'added');
       Alert.alert(
         res?.action === 'added' ? 'Agregado a Favoritos' : 'Eliminado de Favoritos',
@@ -361,7 +362,7 @@ export default function DestinoDetalleScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   header: {
     flexDirection: 'row',
@@ -370,7 +371,7 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
     backgroundColor: colors.surface,
   },
   headerButton: {
@@ -391,7 +392,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   content: {
     paddingBottom: spacing.xl,
@@ -432,7 +433,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.lg,
     padding: spacing.lg,
   },
@@ -445,7 +446,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...typography.body,
     fontSize: 14,
-    color: colors.text,
+    color: colors.text.primary,
   },
   actions: {
     gap: spacing.sm,
@@ -479,7 +480,7 @@ const styles = StyleSheet.create({
   lastReviewCard: {
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: spacing.xs,

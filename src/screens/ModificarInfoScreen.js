@@ -234,7 +234,7 @@ export default function ModificarInfoScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background.screen,
   },
   header: {
     flexDirection: 'row',
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.border.light,
     backgroundColor: colors.surface,
   },
   headerButton: {
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     borderRadius: 55,
     backgroundColor: '#FDFBF7',
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -316,17 +316,17 @@ const styles = StyleSheet.create({
   label: {
     ...typography.caption,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.text.primary,
   },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.border.light,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     fontSize: 16,
-    color: colors.text,
+    color: colors.text.primary,
   },
   inputDisabled: {
     backgroundColor: '#F1ECE7',
