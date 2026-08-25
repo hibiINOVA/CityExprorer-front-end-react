@@ -21,7 +21,7 @@ export default function FavoritosScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [cargandoId, setCargandoId] = useState(null);
 
-  // 🔄 Auto-refresh cuando el tab de Favoritos recibe foco
+  // Auto-refresh cuando el tab de Favoritos recibe foco
   useFocusEffect(
     useCallback(() => {
       if (isGuest) return;

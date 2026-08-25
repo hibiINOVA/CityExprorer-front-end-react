@@ -16,7 +16,7 @@ export default function IniciarRegistroScreen({ navigation }) {
     >
       <View style={styles.overlay}>
         <View style={styles.logoContainer}>
-          <AppText style={styles.logoText}>🌎 City Explorer</AppText>
+          <AppText style={styles.logoText}>City Explorer</AppText>
         </View>
 
         <View style={styles.contentContainer}>

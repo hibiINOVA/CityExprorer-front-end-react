@@ -6,7 +6,7 @@ import { colors, typography, spacing, radius } from '../theme/theme';
 
 const secciones = [
   {
-    titulo: '📍 Información del Responsable',
+    titulo: 'Información del Responsable',
     items: [
       'Empresa: ExploreTech',
       'Domicilio: Calle Cardón 70, Palmita de Landeta, San Miguel De Allende, Guanajuato, México',
@@ -15,7 +15,7 @@ const secciones = [
     ],
   },
   {
-    titulo: '🎯 Finalidades del Tratamiento de Datos',
+    titulo: 'Finalidades del Tratamiento de Datos',
     items: [
       'Crear una cuenta en nuestro software.',
       'Acceder a las funcionalidades según el tipo de usuario.',
@@ -27,7 +27,7 @@ const secciones = [
     ],
   },
   {
-    titulo: '📊 Datos Personales que Recabamos',
+    titulo: 'Datos Personales que Recabamos',
     items: [
       'Nombre completo: identificación personal.',
       'Teléfono: contacto directo.',
@@ -39,7 +39,7 @@ const secciones = [
     ],
   },
   {
-    titulo: '📞 Contactos para Ejercer tus Derechos',
+    titulo: 'Contactos para Ejercer tus Derechos',
     items: [
       'Soporte General: exploretech.support@gmail.com',
       'Derechos ARCO: exploretech.heltp@gmail.com',
@@ -48,7 +48,7 @@ const secciones = [
     ],
   },
   {
-    titulo: '🚫 Cómo Limitar el Uso de tus Datos',
+    titulo: 'Cómo Limitar el Uso de tus Datos',
     items: [
       'Dejar de recibir promociones: desactiva notificaciones desde el último correo recibido.',
       'Correo postal: sigue las instrucciones del material publicitario.',
@@ -56,12 +56,12 @@ const secciones = [
     ],
   },
   {
-    titulo: '⚖️ Derechos ARCO',
+    titulo: 'Derechos ARCO',
     contenido:
       'Para ejercer los derechos de Acceso, Rectificación, Cancelación u Oposición, envía una solicitud que incluya: nombre del solicitante, teléfono de contacto, asunto (tipo de derecho) y una descripción clara de la solicitud con los documentos que la respalden.',
   },
   {
-    titulo: '🔄 Cambios en el Aviso de Privacidad',
+    titulo: 'Cambios en el Aviso de Privacidad',
     contenido:
       'Este Aviso puede modificarse o actualizarse en cualquier momento. Te recomendamos revisar esta página periódicamente. Se notificará a los usuarios sobre cambios importantes mediante la aplicación y los medios de contacto proporcionados.',
   },
@@ -79,7 +79,7 @@ export default function PrivacidadScreen({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>🔒 Aviso de Privacidad</Text>
+        <Text style={styles.title}>Aviso de Privacidad</Text>
 
         {secciones.map((seccion) => (
           <View key={seccion.titulo} style={styles.card}>

@@ -53,7 +53,7 @@ export default function DestinoDetalleScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
 
-  // 🔄 Auto-refresh cuando la pantalla vuelve a tener foco (después de escribir reseña, etc.)
+  // Auto-refresh cuando la pantalla vuelve a tener foco (después de escribir reseña, etc.)
   useFocusEffect(
     useCallback(() => {
       if (!idDestino) return;
@@ -73,7 +73,7 @@ export default function DestinoDetalleScreen({ navigation, route }) {
     }, [idDestino, idUsuario])
   );
 
-  // 🕒 Tracking de tiempo de visita
+  // Tracking de tiempo de visita
   const tiempoInicio = useRef(0);
   const ultimoPing = useRef(0);
   const tiempoTotal = useRef(0);
@@ -113,7 +113,7 @@ export default function DestinoDetalleScreen({ navigation, route }) {
     })();
   }, [idDestino, idUsuario]);
 
-  // 🕒 Lógica de tracking
+  // Lógica de tracking
   const guardarVisita = useCallback(
     (segundos, esFinal = false) => {
       if (!idDestino) return;

@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthContext } from '../store/AuthContext';
 import { getCategorias } from '../services/api';
 import { colors, typography, spacing, radius } from '../theme/theme';
+import ModosExploracionModal from '../components/ModosExploracionModal';
 
 const ICONOS_CATEGORIA = [
   { clave: 'parque', icono: 'leaf-outline' },
@@ -42,6 +43,7 @@ export default function HomeScreen({ navigation }) {
   const [showBanner, setShowBanner] = useState(true);
   const [categorias, setCategorias] = useState([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -57,7 +59,19 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   const handleCategoryPress = (categoryId) => {
-    navigation.navigate('DestinosCategoria', { categoryId });
+    navigation.navigate('DestinosCategoria', {
+      categoryId,
+      modo: null,
+      timestamp: Date.now(),
+    });
+  };
+
+  const handleSelectModo = (modo) => {
+    navigation.navigate('DestinosCategoria', {
+      modo,
+      categoryId: null,
+      timestamp: Date.now(),
+    });
   };
 
   const handleFabPress = () => {
@@ -79,7 +93,11 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable style={styles.headerButton} onPress={() => Alert.alert('Menú', 'Próximamente disponible.')}>
+        <Pressable
+          style={styles.headerButton}
+          onPress={() => setMenuVisible(true)}
+          accessibilityLabel="Abrir menú de modos de exploración"
+        >
           <Ionicons name="menu-outline" size={26} color={colors.primary} />
         </Pressable>
         <Text style={styles.headerText}>City Explorer</Text>
@@ -148,6 +166,13 @@ export default function HomeScreen({ navigation }) {
       <Pressable style={styles.fab} onPress={handleFabPress}>
         <Ionicons name="add" size={28} color="#FFFFFF" />
       </Pressable>
+
+      {/* Drawer / Modal de Modos de Exploración */}
+      <ModosExploracionModal
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        onSelectModo={handleSelectModo}
+      />
     </SafeAreaView>
   );
 }

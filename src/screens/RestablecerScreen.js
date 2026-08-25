@@ -193,7 +193,11 @@ export default function RestablecerScreen({ navigation }) {
                   onChangeText={setPassword}
                 />
                 <Pressable style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
-                  <Text style={styles.eyeButtonText}>{showPassword ? 'Ocultar' : '👁'}</Text>
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color={colors.textSecondary}
+                  />
                 </Pressable>
               </View>
             </View>
@@ -210,7 +214,11 @@ export default function RestablecerScreen({ navigation }) {
                   onChangeText={setConfirmPassword}
                 />
                 <Pressable style={styles.eyeButton} onPress={() => setShowConfirm(!showConfirm)}>
-                  <Text style={styles.eyeButtonText}>{showConfirm ? 'Ocultar' : '👁'}</Text>
+                  <Ionicons
+                    name={showConfirm ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color={colors.textSecondary}
+                  />
                 </Pressable>
               </View>
             </View>

@@ -6,38 +6,35 @@ import { colors, typography, spacing, radius } from '../theme/theme';
 
 const secciones = [
   {
-    icono: '📱',
     titulo: '¿Cómo usar la app?',
     items: [
       'Navega entre secciones usando el menú inferior',
       'Filtra por categoría o busca lugares específicos',
       'Toca cualquier lugar para ver detalles completos',
-      'Agrega favoritos tocando el corazón ❤️',
+      'Agrega favoritos tocando el icono de corazón',
       'Usa el filtro de estrellas para los mejores lugares',
     ],
   },
   {
-    icono: '💡',
     titulo: 'Tips Locales',
     items: [
       'Verifica horarios: algunos cierran entre semana',
       'Lleva efectivo: no todos aceptan tarjeta',
-      'El atardecer desde el mirador es imperdible 📸',
+      'El atardecer desde el mirador es imperdible',
       'Fines de semana: ve temprano por estacionamiento',
       'Pregunta por menús del día (más económicos)',
       'Prueba el tranvía turístico para recorridos',
       'Explora mercados locales para experiencias auténticas',
       'Lleva chamarra: el clima cambia rápido',
-      'Evita tacos turísticos, busca los de locales 😉',
+      'Evita tacos turísticos, busca los de locales',
       'Muchos eventos culturales son gratuitos',
     ],
   },
   {
-    icono: '♿',
     titulo: 'Accesibilidad',
     items: [
       'Centro histórico con escalones y empedrado',
-      'Busca el ícono ♿ para acceso en silla de ruedas',
+      'Busca información de acceso en silla de ruedas en cada ficha',
       'Jardín Principal tiene rampas en varias entradas',
       'Consulta por baños adaptados antes de visitar',
     ],
@@ -88,9 +85,7 @@ export default function AyudaScreen({ navigation }) {
 
         {secciones.map((seccion) => (
           <View key={seccion.titulo} style={styles.card}>
-            <Text style={styles.cardTitle}>
-              {seccion.icono} {seccion.titulo}
-            </Text>
+            <Text style={styles.cardTitle}>{seccion.titulo}</Text>
             {seccion.items.map((item, i) => (
               <Text key={i} style={styles.listItem}>
                 • {item}
@@ -100,7 +95,7 @@ export default function AyudaScreen({ navigation }) {
         ))}
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🆘 Información de Emergencia</Text>
+          <Text style={styles.cardTitle}>Información de Emergencia</Text>
           {emergencias.map((item) => (
             <Text key={item.nombre} style={styles.listItem}>
               <Text style={styles.bold}>{item.nombre}:</Text> {item.telefono}
@@ -118,7 +113,7 @@ export default function AyudaScreen({ navigation }) {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>📞 Contacto y Soporte</Text>
+          <Text style={styles.cardTitle}>Contacto y Soporte</Text>
           {contactos.map((item) => (
             <Text key={item.nombre} style={styles.listItem}>
               <Text style={styles.bold}>{item.nombre}:</Text> {item.dato}
@@ -127,7 +122,7 @@ export default function AyudaScreen({ navigation }) {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🌐 Glosario Local</Text>
+          <Text style={styles.cardTitle}>Glosario Local</Text>
           {glosario.map((item) => (
             <Text key={item.termino} style={styles.listItem}>
               <Text style={styles.bold}>{item.termino}:</Text> {item.definicion}

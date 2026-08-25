@@ -15,48 +15,114 @@ import DestinoCard from '../components/DestinoCard';
 import EmptyState from '../components/EmptyState';
 import { colors, typography, spacing, radius } from '../theme/theme';
 
+function normalizar(texto) {
+  if (!texto || typeof texto !== 'string') return '';
+  return texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+function contienePalabraCompleta(texto, termino) {
+  if (!texto || !termino) return false;
+  if (termino.includes(' ')) {
+    return texto.includes(termino);
+  }
+  const regex = new RegExp(`(^|[^a-z0-9])${termino}([^a-z0-9]|$)`, 'i');
+  return regex.test(texto);
+}
+
 export default function DestinosScreen({ navigation, route }) {
   const { lugares, categorias, getCategoriaNombre, getPromedio, loading, error } = useLugares();
   const [busqueda, setBusqueda] = useState('');
   const [filtroEstrellas, setFiltroEstrellas] = useState(null);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(
+    route.params?.categoryId ? Number(route.params.categoryId) : null
+  );
+  const [modoActivo, setModoActivo] = useState(route.params?.modo || null);
 
-  const categoryId = route.params?.categoryId ? Number(route.params.categoryId) : null;
-
+  // Sincronizar parámetros cuando se navega con nuevos valores
   useEffect(() => {
-    if (route.params?.categoryId) {
-      setBusqueda('');
-      setFiltroEstrellas(null);
+    if (route.params?.modo !== undefined) {
+      setModoActivo(route.params.modo);
+      if (route.params.modo) {
+        setCategoriaSeleccionada(null);
+      }
     }
-  }, [route.params?.categoryId]);
+    if (route.params?.categoryId !== undefined) {
+      const catId = route.params.categoryId ? Number(route.params.categoryId) : null;
+      setCategoriaSeleccionada(catId);
+      if (catId) {
+        setModoActivo(null);
+      }
+    }
+    setBusqueda('');
+    setFiltroEstrellas(null);
+  }, [route.params?.categoryId, route.params?.modo, route.params?.timestamp]);
 
-  const categoriaActiva = categoryId
-    ? categorias.find((c) => c.id_categoria === categoryId)
+  const categoriaActiva = categoriaSeleccionada
+    ? categorias.find((c) => Number(c.id_categoria) === Number(categoriaSeleccionada))
     : null;
 
   const resultados = useMemo(() => {
-    let lista = lugares;
+    let lista = Array.isArray(lugares) ? lugares : [];
 
-    if (categoryId) {
-      lista = lista.filter((lugar) => Number(lugar.id_categoria) === categoryId);
+    // Filtro por categoría específica (si viene de selección de categoría)
+    if (categoriaSeleccionada) {
+      lista = lista.filter((lugar) => Number(lugar.id_categoria) === Number(categoriaSeleccionada));
     }
 
+    // Filtro por Modo de Exploración / Ambiente
+    if (modoActivo) {
+      const keywords = (modoActivo.keywords || []).map(normalizar).filter(Boolean);
+      const catKeywords = (modoActivo.categorias || []).map(normalizar).filter(Boolean);
+
+      lista = lista.filter((lugar) => {
+        const nombre = normalizar(lugar.nombre);
+        const desc = normalizar(lugar.descripcion);
+        const catNombre = normalizar(getCategoriaNombre(lugar.id_categoria));
+
+        // 1. Coincidencia por categoría del modo
+        const matchCat = catKeywords.some((ck) => catNombre === ck || catNombre.includes(ck));
+        if (matchCat) return true;
+
+        // 2. Coincidencia por palabras clave específicas en nombre o descripción
+        const matchKeywords = keywords.some((kw) =>
+          contienePalabraCompleta(nombre, kw) ||
+          contienePalabraCompleta(desc, kw)
+        );
+
+        return matchKeywords;
+      });
+    }
+
+    // Filtro por valoración de estrellas
     if (filtroEstrellas !== null) {
       lista = lista.filter((lugar) => Math.round(getPromedio(lugar.id_lugar)) === filtroEstrellas);
     }
 
+    // Filtro por término de búsqueda en tiempo real
     if (busqueda.trim()) {
-      const termino = busqueda.trim().toLowerCase();
-      lista = lista.filter(
-        (lugar) =>
-          (lugar.nombre || '').toLowerCase().includes(termino) ||
-          (lugar.descripcion || '').toLowerCase().includes(termino)
-      );
+      const termino = normalizar(busqueda.trim());
+      lista = lista.filter((lugar) => {
+        const nombre = normalizar(lugar.nombre);
+        const desc = normalizar(lugar.descripcion);
+        const catNombre = normalizar(getCategoriaNombre(lugar.id_categoria));
+        return nombre.includes(termino) || desc.includes(termino) || catNombre.includes(termino);
+      });
     }
 
     return lista;
-  }, [lugares, categoryId, filtroEstrellas, busqueda, getPromedio]);
+  }, [lugares, categoriaSeleccionada, modoActivo, filtroEstrellas, busqueda, getPromedio, getCategoriaNombre]);
 
   const stars = [5, 4, 3, 2, 1];
+
+  const tituloHeader = categoriaActiva
+    ? categoriaActiva.nombre
+    : modoActivo
+    ? modoActivo.titulo
+    : 'Destinos';
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -65,12 +131,29 @@ export default function DestinosScreen({ navigation, route }) {
           <Ionicons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
         <Text style={styles.headerText} numberOfLines={1}>
-          {categoriaActiva ? categoriaActiva.nombre : 'Destinos'}
+          {tituloHeader}
         </Text>
         <View style={styles.headerButton} />
       </View>
 
       <View style={styles.filters}>
+        {modoActivo ? (
+          <View style={styles.activeModoBadge}>
+            <View style={styles.activeModoContent}>
+              <Ionicons name={modoActivo.icono || 'sparkles'} size={18} color={colors.primary} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.activeModoTitle}>Modo: {modoActivo.titulo}</Text>
+                <Text style={styles.activeModoDesc} numberOfLines={1}>
+                  {modoActivo.subtitulo}
+                </Text>
+              </View>
+            </View>
+            <Pressable onPress={() => setModoActivo(null)} style={styles.clearModoBtn}>
+              <Ionicons name="close-circle" size={20} color={colors.primary} />
+            </Pressable>
+          </View>
+        ) : null}
+
         <View style={styles.searchBox}>
           <Ionicons name="search" size={18} color={colors.textSecondary} />
           <TextInput
@@ -134,7 +217,7 @@ export default function DestinosScreen({ navigation, route }) {
         <EmptyState
           icon="compass-outline"
           title="Sin destinos"
-          message="No hay destinos que coincidan con tu búsqueda o categoría."
+          message="No hay destinos que coincidan con este modo o búsqueda."
         />
       ) : (
         <FlatList
@@ -244,5 +327,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  activeModoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FAF7F4',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
+  },
+  activeModoContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  activeModoTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  activeModoDesc: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  clearModoBtn: {
+    padding: spacing.xs,
   },
 });
